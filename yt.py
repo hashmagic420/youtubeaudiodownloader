@@ -1,33 +1,27 @@
 import streamlit as st
-import requests
-from pytube import YouTube
+import yt_dlp
 
 # Function to get video information
 def get_video_info(video_url):
-    try:
-        yt = YouTube(video_url)
+    ydl_opts = {}
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(video_url, download=False)
         video_info = {
-            "title": yt.title,
-            "thumbnail": yt.thumbnail_url,
-            "views": yt.views,
-            "length": yt.length,
-            "rating": yt.rating,
+            "title": info.get("title"),
+            "thumbnail": info.get("thumbnail"),
+            "views": info.get("view_count"),
+            "length": info.get("duration"),
+            "rating": info.get("average_rating"),
             "url": video_url
         }
-        return video_info
-    except Exception as e:
-        st.error(f"Error fetching video info: {e}")
-        return None
+    return video_info
 
 # Function to download video
 def download_video(video_url):
-    try:
-        yt = YouTube(video_url)
-        stream = yt.streams.filter(file_extension='mp4', res="360p").first()
-        stream.download()
-        st.success(f"Video downloaded: {yt.title}.mp4")
-    except Exception as e:
-        st.error(f"Error downloading video: {e}")
+    ydl_opts = {'format': 'best', 'outtmpl': '%(title)s.%(ext)s'}
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([video_url])
+        st.success(f"Video downloaded from {video_url}")
 
 st.set_page_config(page_title="YouTube Video Downloader", layout="centered")
 
@@ -58,9 +52,3 @@ st.write("""
     This app allows you to download YouTube videos in 360p format.
     Enter the YouTube video URL in the sidebar to get started.
 """)
-
-# Custom HTML/CSS/JS
-st.markdown("""
-    <link rel="stylesheet" href="static/style.css">
-    <script src="static/scripts.js"></script>
-""", unsafe_allow_html=True)
