@@ -1,0 +1,23 @@
+body {
+    background-color: #E64A19;
+    color: white;
+}
+
+.sidebar .sidebar-content {
+    background-color: #E64A19;
+    color: white;
+}
+
+button {
+    background-color: #fff;
+    color: #E64A19;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #E64A19;
+    color: #fff;
+}
